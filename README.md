@@ -41,13 +41,3 @@ Este microservicio está diseñado siguiendo los principios de la Arquitectura H
 * Java Amazon Corretto 17
 * Gradle
 * Una instancia de base de datos PostgreSQL en ejecución.
-
-### Configuración del Entorno
-
-1.  **Clonar el Repositorio:**
-    ```bash
-    git clone https://github.com/JulianVergel/food-court-user-service.git
-    ```
-    ```bash
-    cd food-court-user-service
-    ```
