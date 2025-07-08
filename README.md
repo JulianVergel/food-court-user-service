@@ -46,7 +46,7 @@ Este microservicio está diseñado siguiendo los principios de la Arquitectura H
 
 1.  **Clonar el Repositorio:**
     ```bash
-    git clone [https://github.com/JulianVergel/food-court-user-service.git](https://github.com/JulianVergel/food-court-user-service.git)
+    git clone https://github.com/JulianVergel/food-court-user-service.git
     ```
     ```bash
     cd food-court-user-service
