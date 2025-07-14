@@ -1,8 +1,9 @@
 package com.foodcourt.user_service.infrastructure.input.rest;
 
-import com.foodcourt.user_service.domain.api.IUserServicePort;
-import com.foodcourt.user_service.infrastructure.input.rest.dto.request.UserRequestDto;
-import com.foodcourt.user_service.infrastructure.input.rest.mapper.IUserRequestMapper;
+import com.foodcourt.user_service.application.dto.request.UserRequestDto;
+import com.foodcourt.user_service.application.handler.IUserHandler;
+
+import com.foodcourt.user_service.infrastructure.exceptionhandler.dto.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/usuario")
 @RequiredArgsConstructor
 public class UserRestController {
-    private final IUserServicePort userServicePort;
-    private final IUserRequestMapper userRequestMapper;
+    private final IUserHandler userHandler;
 
     @PostMapping("/propietario")
-    public ResponseEntity<Void> createOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
-        var user = userRequestMapper.toUser(userRequestDto);
-        userServicePort.createOwner(user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<SuccessResponse> createOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.createOwner(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SuccessResponse("Propietario creado exitosamente"));
     }
-
 }

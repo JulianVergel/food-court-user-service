@@ -21,4 +21,19 @@ public class UserJpaAdapter implements IUserPersistencePort {
         var userSavedEntity = userRepository.save(userEntity);
         return userEntityMapper.toUser(userSavedEntity);
     }
+
+    @Override
+    public boolean existsByDocument(String document) {
+        return userRepository.existsByDocument(document);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        return userRepository.existsByPhone(phone);
+    }
 }

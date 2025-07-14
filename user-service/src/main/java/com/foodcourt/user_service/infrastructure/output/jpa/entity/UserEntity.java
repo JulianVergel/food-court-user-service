@@ -16,8 +16,9 @@ public class UserEntity {
     private long id;
     private String name;
     private String lastName;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 10)
     private String document;
+    @Column(unique = true, nullable = false, length = 13)
     private String phone;
     private LocalDate birthdate;
     @Column(unique = true, nullable = false)

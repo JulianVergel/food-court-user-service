@@ -1,9 +1,6 @@
-package com.foodcourt.user_service.infrastructure.input.rest.dto.request;
+package com.foodcourt.user_service.application.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,10 +16,12 @@ public class UserRequestDto {
     private String lastName;
 
     @Pattern(regexp = "^[0-9]+$", message = "El documento de identidad debe ser numérico")
+    @Size(min = 10, max = 10, message = "El documento de identidad debe tener 10 caracteres")
     @NotBlank(message = "El documento es obligatorio")
     private String document;
 
-    @Pattern(regexp = "^\\+?[0-9]{1,12}$", message = "El celular debe contener máximo 13 caracteres y puede iniciar con '+'")
+    @Pattern(regexp = "^\\+?[0-9]{1,12}$", message = "El celular debe ser numérico y puede tener un prefijo con '+'")
+    @Size(min = 10, max = 13, message = "El celular debe tener entre 10 y 13 caracteres")
     @NotBlank(message = "El celular es obligatorio")
     private String phone;
 

@@ -1,4 +1,4 @@
-package com.foodcourt.user_service.infrastructure.configuration;
+package com.foodcourt.user_service.infrastructure.documentation;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
