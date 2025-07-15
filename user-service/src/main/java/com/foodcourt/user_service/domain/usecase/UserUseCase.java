@@ -8,6 +8,7 @@ import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IPasswordEncoderPort;
 import com.foodcourt.user_service.domain.spi.IRolePersistencePort;
 import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
+import com.foodcourt.user_service.domain.utils.DomainConstants;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -23,16 +24,16 @@ public class UserUseCase implements IUserServicePort {
             throw new UserIsNotOfLegalAgeException();
         }
         if (userPersistencePort.existsByDocument(user.getDocument())) {
-            throw new UserAlreadyExistsException("El documento ya está registrado");
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_DOCUMENT_MESSAGE);
         }
         if (userPersistencePort.existsByEmail(user.getEmail())) {
-            throw new UserAlreadyExistsException("El correo ya está registrado");
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_EMAIL_MESSAGE);
         }
         if (userPersistencePort.existsByPhone(user.getPhone())) {
-            throw new UserAlreadyExistsException("El celular ya está registrado");
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_PHONE_MESSAGE);
         }
 
-        Role roleOwner = rolePersistencePort.findRoleByName("Propietario");
+        Role roleOwner = rolePersistencePort.findRoleByName(DomainConstants.ROLE_OWNER);
         user.setRole(roleOwner);
 
         String encryptedPassword = passwordEncoderPort.encodePassword(user.getPassword());

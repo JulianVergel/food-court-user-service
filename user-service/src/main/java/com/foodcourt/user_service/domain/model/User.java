@@ -21,6 +21,6 @@ public class User {
     private Role role;
 
     public boolean isOfLegalAge() {
-        return LocalDate.now().minusYears(18).isAfter(birthdate);
+        return !LocalDate.now().minusYears(18).isBefore(birthdate);
     }
 }

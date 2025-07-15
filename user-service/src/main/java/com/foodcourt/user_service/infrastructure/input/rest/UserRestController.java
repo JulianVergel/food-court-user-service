@@ -4,6 +4,7 @@ import com.foodcourt.user_service.application.dto.request.UserRequestDto;
 import com.foodcourt.user_service.application.handler.IUserHandler;
 
 import com.foodcourt.user_service.infrastructure.exceptionhandler.dto.SuccessResponse;
+import com.foodcourt.user_service.infrastructure.utils.InfrastructureConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,6 @@ public class UserRestController {
     public ResponseEntity<SuccessResponse> createOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.createOwner(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse("Propietario creado exitosamente"));
+                .body(new SuccessResponse(InfrastructureConstants.OWNER_CREATED_SUCCESSFULLY_MESSAGE));
     }
 }

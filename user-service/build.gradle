@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.foodcourt'
@@ -42,4 +43,42 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Configuración de JaCoCo
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+// Tarea para generar el reporte después de correr los tests
+tasks.named('jacocoTestReport', JacocoReport) {
+	dependsOn tasks.named('test')
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+// Tarea para verificar que se cumple la cobertura mínima
+tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification) {
+	dependsOn tasks.named('jacocoTestReport')
+	violationRules {
+		rule {
+			element = 'PACKAGE'
+			// Apunta específicamente al paquete que queremos medir
+			includes = ['com.foodcourt.user_service.domain.*']
+
+			// Define los límites de cobertura
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80 // Exige un mínimo de 80% (0.8)
+			}
+		}
+	}
+}
+
+// Le decimos a la tarea 'build' que también debe verificar la cobertura
+tasks.named('build') {
+	dependsOn tasks.named('jacocoTestCoverageVerification')
 }
