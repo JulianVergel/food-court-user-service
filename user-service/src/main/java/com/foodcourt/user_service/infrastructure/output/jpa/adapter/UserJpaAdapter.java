@@ -5,6 +5,7 @@ import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
 import com.foodcourt.user_service.infrastructure.output.jpa.entity.UserEntity;
 import com.foodcourt.user_service.infrastructure.output.jpa.mapper.IUserEntityMapper;
 import com.foodcourt.user_service.infrastructure.output.jpa.repository.IUserRepository;
+import com.foodcourt.user_service.infrastructure.exception.NoDataFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -35,5 +36,12 @@ public class UserJpaAdapter implements IUserPersistencePort {
     @Override
     public boolean existsByPhone(String phone) {
         return userRepository.existsByPhone(phone);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .map(userEntityMapper::toUser)
+                .orElseThrow(NoDataFoundException::new);
     }
 }

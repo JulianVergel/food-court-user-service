@@ -1,6 +1,7 @@
-package com.foodcourt.user_service.infrastructure.input.rest;
+package com.foodcourt.user_service.infrastructure.input.rest.controller;
 
 import com.foodcourt.user_service.application.dto.request.UserRequestDto;
+import com.foodcourt.user_service.application.dto.response.UserResponseDto;
 import com.foodcourt.user_service.application.handler.IUserHandler;
 import com.foodcourt.user_service.infrastructure.exceptionhandler.dto.ExceptionResponse;
 import com.foodcourt.user_service.infrastructure.exceptionhandler.dto.SuccessResponse;
@@ -15,10 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -42,5 +40,18 @@ public class UserRestController {
         userHandler.createOwner(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new SuccessResponse(InfrastructureConstants.OWNER_CREATED_SUCCESSFULLY_MESSAGE));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener un usuario por ID",
+            description = "Permite obtener la información de un usuario específico por su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userHandler.getUserById(id));
     }
 }

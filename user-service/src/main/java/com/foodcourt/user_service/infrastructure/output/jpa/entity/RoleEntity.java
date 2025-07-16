@@ -1,11 +1,12 @@
 package com.foodcourt.user_service.infrastructure.output.jpa.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "roles")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class RoleEntity {
