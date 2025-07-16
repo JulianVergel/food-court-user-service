@@ -1,6 +1,6 @@
 package com.foodcourt.user_service.domain.exception;
 
-import com.foodcourt.user_service.domain.utils.DomainConstants;
+import com.foodcourt.user_service.domain.utils.constants.DomainConstants;
 
 public class UserIsNotOfLegalAgeException extends RuntimeException{
     public UserIsNotOfLegalAgeException() {

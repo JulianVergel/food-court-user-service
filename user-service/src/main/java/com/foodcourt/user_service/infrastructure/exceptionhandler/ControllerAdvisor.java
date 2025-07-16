@@ -1,5 +1,6 @@
 package com.foodcourt.user_service.infrastructure.exceptionhandler;
 
+import com.foodcourt.user_service.domain.exception.InvalidDomainDataException;
 import com.foodcourt.user_service.domain.exception.UserAlreadyExistsException;
 import com.foodcourt.user_service.domain.exception.UserIsNotOfLegalAgeException;
 import com.foodcourt.user_service.infrastructure.exception.NoDataFoundException;
@@ -40,6 +41,12 @@ public class ControllerAdvisor {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT) // 409 Conflict
+                .body(new ExceptionResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidDomainDataException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidDomainDataException(InvalidDomainDataException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(ex.getMessage()));
     }
 }

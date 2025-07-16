@@ -8,7 +8,8 @@ import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IPasswordEncoderPort;
 import com.foodcourt.user_service.domain.spi.IRolePersistencePort;
 import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
-import com.foodcourt.user_service.domain.utils.DomainConstants;
+import com.foodcourt.user_service.domain.utils.constants.DomainConstants;
+import com.foodcourt.user_service.domain.utils.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -20,9 +21,8 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public void createOwner(User user) {
-        if (!user.isOfLegalAge()) {
-            throw new UserIsNotOfLegalAgeException();
-        }
+        UserValidator.validateUser(user);
+
         if (userPersistencePort.existsByDocument(user.getDocument())) {
             throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_DOCUMENT_MESSAGE);
         }

@@ -1,5 +1,6 @@
 package com.foodcourt.user_service.domain.model;
 
+import com.foodcourt.user_service.domain.utils.constants.DomainConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +20,4 @@ public class User {
     private String email;
     private String password;
     private Role role;
-
-    public boolean isOfLegalAge() {
-        return !LocalDate.now().minusYears(18).isBefore(birthdate);
-    }
 }
