@@ -9,6 +9,8 @@ import com.foodcourt.user_service.infrastructure.exception.NoDataFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UserJpaAdapter implements IUserPersistencePort {
@@ -43,5 +45,10 @@ public class UserJpaAdapter implements IUserPersistencePort {
         return userRepository.findById(id)
                 .map(userEntityMapper::toUser)
                 .orElseThrow(NoDataFoundException::new);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email).map(userEntityMapper::toUser);
     }
 }
