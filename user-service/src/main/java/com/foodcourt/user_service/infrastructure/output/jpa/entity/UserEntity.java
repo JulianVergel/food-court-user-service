@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -28,4 +29,7 @@ public class UserEntity {
     @ManyToOne
     @JoinColumn(name = "id_rol", nullable = false)
     private RoleEntity role;
+
+    private Integer failedLoginAttempts = 0;
+    private LocalDateTime lockTime;
 }

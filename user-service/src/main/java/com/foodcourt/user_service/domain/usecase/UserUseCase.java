@@ -46,4 +46,27 @@ public class UserUseCase implements IUserServicePort {
     public User getUserById(Long id) {
         return userPersistencePort.findById(id);
     }
+
+    @Override
+    public void createEmployee(User user) {
+        UserValidator.validateUser(user);
+
+        if (userPersistencePort.existsByDocument(user.getDocument())) {
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_DOCUMENT_MESSAGE);
+        }
+        if (userPersistencePort.existsByEmail(user.getEmail())) {
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_EMAIL_MESSAGE);
+        }
+        if (userPersistencePort.existsByPhone(user.getPhone())) {
+            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_PHONE_MESSAGE);
+        }
+
+        Role employeeRole = rolePersistencePort.findRoleByName(DomainConstants.ROLE_EMPLOYEE);
+        user.setRole(employeeRole);
+
+        String encryptedPassword = passwordEncoderPort.encodePassword(user.getPassword());
+        user.setPassword(encryptedPassword);
+
+        userPersistencePort.saveUser(user);
+    }
 }

@@ -31,4 +31,10 @@ public class UserHandler implements IUserHandler {
         User user = userServicePort.getUserById(id);
         return userResponseMapper.toUserResponseDto(user);
     }
+
+    @Override
+    public void createEmployee(UserRequestDto userRequestDto) {
+        User user = userRequestMapper.toUser(userRequestDto);
+        userServicePort.createEmployee(user);
+    }
 }

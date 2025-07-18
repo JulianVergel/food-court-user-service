@@ -25,9 +25,13 @@ public class DataInitializer implements CommandLineRunner {
         RoleEntity ownerRole = roleRepository.findByName("Propietario")
                 .orElseGet(() -> roleRepository.save(new RoleEntity(null, "Propietario", "Rol para propietarios")));
 
-        // Crear rol Administrador si no existe (lo necesitarás)
+        // Crear rol Administrador si no existe
         RoleEntity adminRole = roleRepository.findByName("Administrador")
                 .orElseGet(() -> roleRepository.save(new RoleEntity(null, "Administrador", "Rol de administrador")));
+
+        // Crear rol Empleado si no existe
+        RoleEntity employeeRole = roleRepository.findByName("Empleado")
+                .orElseGet(() -> roleRepository.save(new RoleEntity(null, "Empleado", "Rol de Empleado")));
 
 
         // Crear un usuario Propietario de prueba si no existe
@@ -44,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(ownerUser);
         }
 
+        // Crear un usuario Administrador de prueba si no existe
         if (!userRepository.existsByEmail("admin@example.com")) {
             UserEntity adminUser = new UserEntity();
             adminUser.setName("Admin");
@@ -54,6 +59,20 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setEmail("admin@example.com");
             adminUser.setPassword(passwordEncoder.encode("admin123")); // Contraseña conocida
             adminUser.setRole(adminRole); // Asigna el rol de Administrador
+            userRepository.save(adminUser);
+        }
+
+        // Crear un usuario Empleado de prueba si no existe
+        if (!userRepository.existsByEmail("employee@example.com")) {
+            UserEntity adminUser = new UserEntity();
+            adminUser.setName("Employee");
+            adminUser.setLastName("User");
+            adminUser.setDocument("9999999998");
+            adminUser.setPhone("+573009998887");
+            adminUser.setBirthdate(LocalDate.of(1990, 1, 1));
+            adminUser.setEmail("employee@example.com");
+            adminUser.setPassword(passwordEncoder.encode("employee123")); // Contraseña conocida
+            adminUser.setRole(employeeRole);
             userRepository.save(adminUser);
         }
     }
