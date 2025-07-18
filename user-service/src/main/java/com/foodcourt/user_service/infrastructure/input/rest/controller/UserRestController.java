@@ -71,6 +71,23 @@ public class UserRestController {
     public ResponseEntity<SuccessResponse> createEmployee(@Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.createEmployee(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse("Empleado creado exitosamente"));
+                .body(new SuccessResponse(InfrastructureConstants.EMPLOYEE_CREATED_SUCCESSFULLY_MESSAGE));
+    }
+
+    @PostMapping("/client")
+    @Operation(summary = "Crear una nueva cuenta de Cliente",
+            description = "Permite a un nuevo cliente registrarse en el sistema.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cliente registrado exitosamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Petición inválida, error en los datos de entrada",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto, el usuario ya existe",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    public ResponseEntity<SuccessResponse> createClient(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.createClient(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SuccessResponse(InfrastructureConstants.CUSTOMER_CREATED_SUCCESSFULLY_MESSAGE));
     }
 }

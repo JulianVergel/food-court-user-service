@@ -7,4 +7,5 @@ public interface IUserHandler {
     void createOwner(UserRequestDto userRequestDto);
     UserResponseDto getUserById(Long id);
     void createEmployee(UserRequestDto userRequestDto);
+    void createClient(UserRequestDto userRequestDto);
 }

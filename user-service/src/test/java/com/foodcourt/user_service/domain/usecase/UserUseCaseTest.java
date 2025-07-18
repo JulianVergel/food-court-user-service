@@ -125,4 +125,23 @@ public class UserUseCaseTest {
 
         assertEquals(employeeRole, employeeUser.getRole());
     }
+
+    @Test
+    void shouldCreateClientAndSaveUserSuccessfully() {
+        Role clientRole = new Role(4L, "Cliente", "Rol de cliente");
+
+        // Comportamiento de los mocks
+        when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+        when(userPersistencePort.existsByPhone(user.getPhone())).thenReturn(false);
+        when(rolePersistencePort.findRoleByName("Cliente")).thenReturn(clientRole);
+        when(passwordEncoderPort.encodePassword(anyString())).thenReturn("encodedPassword");
+
+        // 2. Act (Actuar)
+        userUseCase.createClient(user);
+
+        // 3. Assert (Verificar)
+        verify(userPersistencePort).saveUser(user);
+        assertEquals(clientRole, user.getRole());
+    }
 }
