@@ -33,6 +33,9 @@ public class DataInitializer implements CommandLineRunner {
         RoleEntity employeeRole = roleRepository.findByName("Empleado")
                 .orElseGet(() -> roleRepository.save(new RoleEntity(null, "Empleado", "Rol de Empleado")));
 
+        // Crear rol Empleado si no existe
+        RoleEntity customerRole = roleRepository.findByName("Cliente")
+                .orElseGet(() -> roleRepository.save(new RoleEntity(null, "Cliente", "Rol de Cliente")));
 
         // Crear un usuario Propietario de prueba si no existe
         if (!userRepository.existsByEmail("propietario@example.com")) {
@@ -73,6 +76,20 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setEmail("employee@example.com");
             adminUser.setPassword(passwordEncoder.encode("employee123")); // Contraseña conocida
             adminUser.setRole(employeeRole);
+            userRepository.save(adminUser);
+        }
+
+        // Crear un usuario Cliente de prueba si no existe
+        if (!userRepository.existsByEmail("customer@example.com")) {
+            UserEntity adminUser = new UserEntity();
+            adminUser.setName("Customer");
+            adminUser.setLastName("User");
+            adminUser.setDocument("9999999988");
+            adminUser.setPhone("+573009988887");
+            adminUser.setBirthdate(LocalDate.of(1990, 1, 1));
+            adminUser.setEmail("customer@example.com");
+            adminUser.setPassword(passwordEncoder.encode("customer123")); // Contraseña conocida
+            adminUser.setRole(customerRole);
             userRepository.save(adminUser);
         }
     }
