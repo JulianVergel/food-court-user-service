@@ -54,4 +54,23 @@ public class UserRestController {
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userHandler.getUserById(id));
     }
+
+    @PostMapping("/employee")
+    @Operation(summary = "Crear un nuevo Empleado",
+            description = "Permite a un propietario crear una cuenta para un nuevo empleado de su restaurante.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Empleado creado exitosamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Petición inválida, error en los datos de entrada",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado, el usuario no es un propietario",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto, el empleado ya existe (documento o correo)",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    public ResponseEntity<SuccessResponse> createEmployee(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.createEmployee(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SuccessResponse("Empleado creado exitosamente"));
+    }
 }
