@@ -13,4 +13,5 @@ public class UserResponseDto {
     private String document;
     private String phone;
     private Role role;
+    private Long restaurantId;
 }

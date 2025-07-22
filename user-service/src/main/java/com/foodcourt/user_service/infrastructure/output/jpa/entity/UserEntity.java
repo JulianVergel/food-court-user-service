@@ -30,6 +30,9 @@ public class UserEntity {
     @JoinColumn(name = "id_rol", nullable = false)
     private RoleEntity role;
 
+    @Column(name = "id_restaurant")
+    private Long restaurantId;
+
     private Integer failedLoginAttempts = 0;
     private LocalDateTime lockTime;
 }

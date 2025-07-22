@@ -1,6 +1,5 @@
 package com.foodcourt.user_service.domain.model;
 
-import com.foodcourt.user_service.domain.utils.constants.DomainConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +22,7 @@ public class User {
     private String email;
     private String password;
     private Role role;
+    private Long restaurantId;
 
     private Integer failedLoginAttempts;
     private LocalDateTime lockTime;

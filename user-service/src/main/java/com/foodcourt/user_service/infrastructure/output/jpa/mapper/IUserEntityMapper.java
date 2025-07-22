@@ -3,6 +3,7 @@ package com.foodcourt.user_service.infrastructure.output.jpa.mapper;
 import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.infrastructure.output.jpa.entity.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",
@@ -10,5 +11,7 @@ import org.mapstruct.ReportingPolicy;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IUserEntityMapper {
     UserEntity toUserEntity(User user);
+
+    @Mapping(source = "restaurantId", target = "restaurantId")
     User toUser(UserEntity userEntity);
 }
