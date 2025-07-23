@@ -94,15 +94,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Crear un usuario Cliente de prueba si no existe
-        if (!userRepository.existsByEmail("customer3@example.com")) {
+        if (!userRepository.existsByEmail("julian@example.com")) {
             UserEntity adminUser = new UserEntity();
-            adminUser.setName("Customer3");
-            adminUser.setLastName("User3");
-            adminUser.setDocument("9939999288");
-            adminUser.setPhone("+573009983287");
-            adminUser.setBirthdate(LocalDate.of(1990, 1, 1));
-            adminUser.setEmail("customer3@example.com");
-            adminUser.setPassword(passwordEncoder.encode("customer3")); // Contraseña conocida
+            adminUser.setName("julian");
+            adminUser.setLastName("vergel");
+            adminUser.setDocument("1092175681");
+            adminUser.setPhone("+573186612574");
+            adminUser.setBirthdate(LocalDate.of(2004, 12, 22));
+            adminUser.setEmail("julian@example.com");
+            adminUser.setPassword(passwordEncoder.encode("julian")); // Contraseña conocida
             adminUser.setRole(customerRole);
             userRepository.save(adminUser);
         }
