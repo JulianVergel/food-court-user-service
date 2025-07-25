@@ -2,6 +2,7 @@ package com.foodcourt.user_service.infrastructure.output.security.jwt;
 
 import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -37,23 +38,31 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @SuppressWarnings("unchecked")
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // Buscamos al usuario en la base de datos para obtener su ID
         User user = userPersistencePort.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        return Jwts.builder()
+        JwtBuilder tokenBuilder = Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
-                .claim("id", user.getId()) // <-- Añadimos el ID como un "claim"
+                .claim("id", user.getId())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration));
+
+        if (roles.contains("ROLE_Propietario")) {
+            Long restaurantId = user.getRestaurantId();
+            if (restaurantId != null) {
+                tokenBuilder.claim("restaurantId", restaurantId);
+            }
+        }
+
+        return tokenBuilder.signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
