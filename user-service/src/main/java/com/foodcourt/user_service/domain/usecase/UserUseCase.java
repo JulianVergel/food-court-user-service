@@ -2,7 +2,6 @@ package com.foodcourt.user_service.domain.usecase;
 
 import com.foodcourt.user_service.domain.api.IUserServicePort;
 import com.foodcourt.user_service.domain.exception.UserAlreadyExistsException;
-import com.foodcourt.user_service.domain.exception.UserIsNotOfLegalAgeException;
 import com.foodcourt.user_service.domain.model.Role;
 import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IPasswordEncoderPort;
@@ -21,25 +20,17 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public void createOwner(User user) {
-        UserValidator.validateUser(user);
+        createUserWithRole(user, DomainConstants.ROLE_OWNER);
+    }
 
-        if (userPersistencePort.existsByDocument(user.getDocument())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_DOCUMENT_MESSAGE);
-        }
-        if (userPersistencePort.existsByEmail(user.getEmail())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_EMAIL_MESSAGE);
-        }
-        if (userPersistencePort.existsByPhone(user.getPhone())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_PHONE_MESSAGE);
-        }
+    @Override
+    public void createEmployee(User user) {
+        createUserWithRole(user, DomainConstants.ROLE_EMPLOYEE);
+    }
 
-        Role roleOwner = rolePersistencePort.findRoleByName(DomainConstants.ROLE_OWNER);
-        user.setRole(roleOwner);
-
-        String encryptedPassword = passwordEncoderPort.encodePassword(user.getPassword());
-        user.setPassword(encryptedPassword);
-
-        userPersistencePort.saveUser(user);
+    @Override
+    public void createClient(User user) {
+        createUserWithRole(user, DomainConstants.ROLE_CLIENT);
     }
 
     @Override
@@ -47,8 +38,7 @@ public class UserUseCase implements IUserServicePort {
         return userPersistencePort.findById(id);
     }
 
-    @Override
-    public void createEmployee(User user) {
+    private void createUserWithRole(User user, String roleName) {
         UserValidator.validateUser(user);
 
         if (userPersistencePort.existsByDocument(user.getDocument())) {
@@ -61,31 +51,8 @@ public class UserUseCase implements IUserServicePort {
             throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_PHONE_MESSAGE);
         }
 
-        Role employeeRole = rolePersistencePort.findRoleByName(DomainConstants.ROLE_EMPLOYEE);
-        user.setRole(employeeRole);
-
-        String encryptedPassword = passwordEncoderPort.encodePassword(user.getPassword());
-        user.setPassword(encryptedPassword);
-
-        userPersistencePort.saveUser(user);
-    }
-
-    @Override
-    public void createClient(User user) {
-        UserValidator.validateUser(user);
-
-        if (userPersistencePort.existsByDocument(user.getDocument())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_DOCUMENT_MESSAGE);
-        }
-        if (userPersistencePort.existsByEmail(user.getEmail())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_EMAIL_MESSAGE);
-        }
-        if (userPersistencePort.existsByPhone(user.getPhone())) {
-            throw new UserAlreadyExistsException(DomainConstants.USER_ALREADY_EXISTS_PHONE_MESSAGE);
-        }
-
-        Role clientRole = rolePersistencePort.findRoleByName("Cliente");
-        user.setRole(clientRole);
+        Role role = rolePersistencePort.findRoleByName(roleName);
+        user.setRole(role);
 
         String encryptedPassword = passwordEncoderPort.encodePassword(user.getPassword());
         user.setPassword(encryptedPassword);

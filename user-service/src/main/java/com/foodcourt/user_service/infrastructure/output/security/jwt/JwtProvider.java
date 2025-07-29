@@ -2,6 +2,7 @@ package com.foodcourt.user_service.infrastructure.output.security.jwt;
 
 import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
+import com.foodcourt.user_service.infrastructure.utils.InfrastructureConstants;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,27 +39,26 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    @SuppressWarnings("unchecked")
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                .toList();
 
         User user = userPersistencePort.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException(InfrastructureConstants.USER_NOT_FOUND_MESSAGE + username));
 
         JwtBuilder tokenBuilder = Jwts.builder()
                 .setSubject(username)
-                .claim("roles", roles)
-                .claim("id", user.getId())
+                .claim(InfrastructureConstants.CLAIM_ROLES, roles)
+                .claim(InfrastructureConstants.CLAIM_ID, user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration));
 
-        if (roles.contains("ROLE_Propietario")) {
+        if (roles.contains(InfrastructureConstants.ROLE_OWNER)) {
             Long restaurantId = user.getRestaurantId();
             if (restaurantId != null) {
-                tokenBuilder.claim("restaurantId", restaurantId);
+                tokenBuilder.claim(InfrastructureConstants.CLAIM_RESTAURANT_ID, restaurantId);
             }
         }
 
@@ -74,7 +74,7 @@ public class JwtProvider {
                 .getBody();
 
         String username = claims.getSubject();
-        List<String> roles = claims.get("roles", List.class);
+        List<String> roles = claims.get(InfrastructureConstants.CLAIM_ROLES, List.class);
         List<GrantedAuthority> authorities = roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package com.foodcourt.user_service.infrastructure.output.security;
 
 import com.foodcourt.user_service.infrastructure.output.jpa.entity.UserEntity;
+import com.foodcourt.user_service.infrastructure.utils.InfrastructureConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + userEntity.getRole().getName()));
+        return Collections.singletonList(new SimpleGrantedAuthority(InfrastructureConstants.ROLE_PREFIX + userEntity.getRole().getName()));
     }
 
     @Override

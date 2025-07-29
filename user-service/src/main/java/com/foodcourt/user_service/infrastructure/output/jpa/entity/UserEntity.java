@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -32,7 +31,4 @@ public class UserEntity {
 
     @Column(name = "id_restaurant")
     private Long restaurantId;
-
-    private Integer failedLoginAttempts = 0;
-    private LocalDateTime lockTime;
 }

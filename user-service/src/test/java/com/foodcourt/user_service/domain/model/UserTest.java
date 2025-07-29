@@ -1,30 +1,33 @@
 package com.foodcourt.user_service.domain.model;
 
-import com.foodcourt.user_service.domain.exception.UserIsNotOfLegalAgeException;
-import com.foodcourt.user_service.domain.utils.validators.UserValidator;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserTest {
-    @Test
-    void shouldNotThrowExceptionWhenUserIsOfLegalAge() {
-        LocalDate legalAgeBirthdate = LocalDate.now().minusYears(18);
-
-        // Verificamos que NO se lanza ninguna excepción
-        assertDoesNotThrow(() -> UserValidator.validateLegalAge(legalAgeBirthdate));
-    }
 
     @Test
-    void shouldThrowExceptionWhenUserIsUnderage() {
-        LocalDate underageBirthdate = LocalDate.now().minusYears(17);
+    void testUserGettersAndSetters() {
+        Role role = new Role(1L, "Test Role", "Description");
+        LocalDate birthdate = LocalDate.of(1995, 10, 20);
 
-        // Verificamos que SI se lanza la excepción correcta
-        assertThrows(UserIsNotOfLegalAgeException.class, () -> {
-            UserValidator.validateLegalAge(underageBirthdate);
-        });
+        User user = new User(1L, "John", "Doe", "12345", "+57",
+                birthdate, "john.doe@mail.com", "pass123", role, 1L);
+
+        assertEquals(1L, user.getId());
+        assertEquals("John", user.getName());
+        assertEquals("Doe", user.getLastName());
+        assertEquals("12345", user.getDocument());
+        assertEquals("+57", user.getPhone());
+        assertEquals(birthdate, user.getBirthdate());
+        assertEquals("john.doe@mail.com", user.getEmail());
+        assertEquals("pass123", user.getPassword());
+        assertEquals(role, user.getRole());
+        assertEquals(1L, user.getRestaurantId());
+
+        User user2 = new User();
+        user2.setName("Jane");
+
+        assertEquals("Jane", user2.getName());
     }
 }

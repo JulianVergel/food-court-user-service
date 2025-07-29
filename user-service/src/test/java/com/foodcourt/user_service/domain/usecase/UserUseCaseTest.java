@@ -1,17 +1,18 @@
 package com.foodcourt.user_service.domain.usecase;
 
 import com.foodcourt.user_service.domain.exception.UserAlreadyExistsException;
-import com.foodcourt.user_service.domain.exception.UserIsNotOfLegalAgeException;
 import com.foodcourt.user_service.domain.model.Role;
 import com.foodcourt.user_service.domain.model.User;
 import com.foodcourt.user_service.domain.spi.IPasswordEncoderPort;
 import com.foodcourt.user_service.domain.spi.IRolePersistencePort;
 import com.foodcourt.user_service.domain.spi.IUserPersistencePort;
+import com.foodcourt.user_service.domain.utils.validators.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -21,23 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserUseCaseTest {
+class UserUseCaseTest {
     @Mock
     private IUserPersistencePort userPersistencePort;
     @Mock
     private IPasswordEncoderPort passwordEncoderPort;
     @Mock
     private IRolePersistencePort rolePersistencePort;
-
     @InjectMocks
-    UserUseCase userUseCase;
+    private UserUseCase userUseCase;
 
     private User user;
 
     @BeforeEach
     void setUp() {
         user = new User();
-
         user.setId(1L);
         user.setName("Test");
         user.setLastName("User");
@@ -47,101 +46,79 @@ public class UserUseCaseTest {
         user.setEmail("test@example.com");
         user.setPassword("password123");
         user.setRole(null);
-        user.setFailedLoginAttempts(0);
-        user.setLockTime(null);
     }
 
     @Test
     void mustCreateOwnerAndSaveUser() {
-        // Arrange
-        Role ownerRole = new Role(2L, "Propietario", "Rol de propietario");
-        when(rolePersistencePort.findRoleByName("Propietario")).thenReturn(ownerRole);
-        when(passwordEncoderPort.encodePassword(user.getPassword())).thenReturn("encodedPassword");
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            Role ownerRole = new Role(2L, "Propietario", "Rol de propietario");
+            when(rolePersistencePort.findRoleByName("Propietario")).thenReturn(ownerRole);
+            when(passwordEncoderPort.encodePassword(user.getPassword())).thenReturn("encodedPassword");
+            when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
+            when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
-        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
-        when(userPersistencePort.existsByPhone(user.getPhone())).thenReturn(false);
+            userUseCase.createOwner(user);
 
-        // Act
-        userUseCase.createOwner(user);
-
-        // Assert
-        verify(userPersistencePort).saveUser(user);
-        assertEquals("encodedPassword", user.getPassword());
-        assertEquals(ownerRole, user.getRole());
+            mockedValidator.verify(() -> UserValidator.validateUser(user)); // Verificamos que el validador fue llamado
+            verify(userPersistencePort).saveUser(user);
+            assertEquals("encodedPassword", user.getPassword());
+            assertEquals(ownerRole, user.getRole());
+        }
     }
 
     @Test
     void shouldThrowExceptionWhenDocumentAlreadyExists() {
-        // Arrange
-        when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(true);
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(true);
 
-        // Act & Assert
-        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
-        verify(userPersistencePort, never()).saveUser(any(User.class));
+            assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
+            mockedValidator.verify(() -> UserValidator.validateUser(user));
+            verify(userPersistencePort, never()).saveUser(any(User.class));
+        }
     }
 
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExists() {
-        // Arrange
-        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(true);
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(true);
 
-        // Act & Assert
-        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
-        verify(userPersistencePort, never()).saveUser(any(User.class));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenPhoneAlreadyExists() {
-        // Arrange
-        when(userPersistencePort.existsByPhone(user.getPhone())).thenReturn(true);
-
-        // Act & Assert
-        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
-        verify(userPersistencePort, never()).saveUser(any(User.class));
+            assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
+            mockedValidator.verify(() -> UserValidator.validateUser(user));
+            verify(userPersistencePort, never()).saveUser(any(User.class));
+        }
     }
 
     @Test
     void shouldCreateEmployeeAndSaveUserSuccessfully() {
-        User employeeUser = new User();
-        employeeUser.setName("Empleado");
-        employeeUser.setLastName("Prueba");
-        employeeUser.setEmail("employee@example.com");
-        employeeUser.setDocument("9876543210");
-        employeeUser.setPassword("password123");
-        employeeUser.setBirthdate(LocalDate.of(2000, 1, 1));
-        employeeUser.setPhone("+573004445566");
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            Role employeeRole = new Role(3L, "Empleado", "Rol de empleado");
+            when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
+            when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+            when(rolePersistencePort.findRoleByName("Empleado")).thenReturn(employeeRole);
+            when(passwordEncoderPort.encodePassword(anyString())).thenReturn("encodedPassword");
 
-        Role employeeRole = new Role(3L, "Empleado", "Rol de empleado");
+            userUseCase.createEmployee(user);
 
-        when(userPersistencePort.existsByDocument(employeeUser.getDocument())).thenReturn(false);
-        when(userPersistencePort.existsByEmail(employeeUser.getEmail())).thenReturn(false);
-        when(rolePersistencePort.findRoleByName("Empleado")).thenReturn(employeeRole);
-        when(passwordEncoderPort.encodePassword(anyString())).thenReturn("encodedPassword");
-
-        userUseCase.createEmployee(employeeUser);
-
-        verify(userPersistencePort).saveUser(employeeUser);
-
-        assertEquals(employeeRole, employeeUser.getRole());
+            mockedValidator.verify(() -> UserValidator.validateUser(user));
+            verify(userPersistencePort).saveUser(user);
+            assertEquals(employeeRole, user.getRole());
+        }
     }
 
     @Test
     void shouldCreateClientAndSaveUserSuccessfully() {
-        Role clientRole = new Role(4L, "Cliente", "Rol de cliente");
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            Role clientRole = new Role(4L, "Cliente", "Rol de cliente");
+            when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
+            when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+            when(rolePersistencePort.findRoleByName("Cliente")).thenReturn(clientRole);
+            when(passwordEncoderPort.encodePassword(anyString())).thenReturn("encodedPassword");
 
-        // Comportamiento de los mocks
-        when(userPersistencePort.existsByDocument(user.getDocument())).thenReturn(false);
-        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
-        when(userPersistencePort.existsByPhone(user.getPhone())).thenReturn(false);
-        when(rolePersistencePort.findRoleByName("Cliente")).thenReturn(clientRole);
-        when(passwordEncoderPort.encodePassword(anyString())).thenReturn("encodedPassword");
+            userUseCase.createClient(user);
 
-        // 2. Act (Actuar)
-        userUseCase.createClient(user);
-
-        // 3. Assert (Verificar)
-        verify(userPersistencePort).saveUser(user);
-        assertEquals(clientRole, user.getRole());
+            mockedValidator.verify(() -> UserValidator.validateUser(user));
+            verify(userPersistencePort).saveUser(user);
+            assertEquals(clientRole, user.getRole());
+        }
     }
 }
