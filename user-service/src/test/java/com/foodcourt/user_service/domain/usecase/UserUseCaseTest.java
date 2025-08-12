@@ -121,4 +121,27 @@ class UserUseCaseTest {
             assertEquals(clientRole, user.getRole());
         }
     }
+
+    @Test
+    void shouldThrowExceptionWhenPhoneAlreadyExists() {
+        try (MockedStatic<UserValidator> mockedValidator = mockStatic(UserValidator.class)) {
+            when(userPersistencePort.existsByPhone(user.getPhone())).thenReturn(true);
+
+            assertThrows(UserAlreadyExistsException.class, () -> userUseCase.createOwner(user));
+
+            mockedValidator.verify(() -> UserValidator.validateUser(user));
+            verify(userPersistencePort, never()).saveUser(any(User.class));
+        }
+    }
+
+    @Test
+    void shouldReturnUserWhenFoundById() {
+        Long userId = 1L;
+        when(userPersistencePort.findById(userId)).thenReturn(user);
+
+        User foundUser = userUseCase.getUserById(userId);
+
+        verify(userPersistencePort).findById(userId);
+        assertEquals(user, foundUser);
+    }
 }

@@ -100,4 +100,54 @@ class UserValidatorTest {
             UserValidator.validateUser(validUser);
         });
     }
+
+    @Test
+    void shouldThrowExceptionWhenBirthdateIsNull() {
+        validUser.setBirthdate(null);
+
+        InvalidDomainDataException exception = assertThrows(InvalidDomainDataException.class, () -> {
+            UserValidator.validateUser(validUser);
+        });
+        assertEquals(DomainConstants.FIELD_BIRTHDATE_REQUIRED_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsNull() {
+        // Arrange
+        validUser.setDocument(null);
+
+        // Act & Assert
+        InvalidDomainDataException exception = assertThrows(InvalidDomainDataException.class, () -> UserValidator.validateUser(validUser));
+        assertEquals(DomainConstants.FIELD_DOCUMENT_NUMERIC_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPhoneIsNull() {
+        // Arrange
+        validUser.setPhone(null);
+
+        // Act & Assert
+        InvalidDomainDataException exception = assertThrows(InvalidDomainDataException.class, () -> UserValidator.validateUser(validUser));
+        assertEquals(DomainConstants.FIELD_PHONE_FORMAT_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmailIsNull() {
+        // Arrange
+        validUser.setEmail(null);
+
+        // Act & Assert
+        InvalidDomainDataException exception = assertThrows(InvalidDomainDataException.class, () -> UserValidator.validateUser(validUser));
+        assertEquals(DomainConstants.FIELD_EMAIL_FORMAT_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPasswordIsBlank() {
+        // Arrange
+        validUser.setPassword("  ");
+
+        // Act & Assert
+        InvalidDomainDataException exception = assertThrows(InvalidDomainDataException.class, () -> UserValidator.validateUser(validUser));
+        assertEquals(DomainConstants.FIELD_PASSWORD_REQUIRED_MESSAGE, exception.getMessage());
+    }
 }
