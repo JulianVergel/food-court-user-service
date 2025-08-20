@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,7 +22,4 @@ public class User {
     private String password;
     private Role role;
     private Long restaurantId;
-
-    private Integer failedLoginAttempts;
-    private LocalDateTime lockTime;
 }

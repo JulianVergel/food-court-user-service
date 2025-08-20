@@ -55,11 +55,6 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/user/owner").hasRole("Administrador")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/user/employee").hasRole("Propietario")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/user/client").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/user/{id}").authenticated()
-
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
